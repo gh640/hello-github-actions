@@ -12,12 +12,15 @@ jobs:
       matrix:
         python-version: [3.7, 3.8]
     steps:
+      # See: https://github.com/actions/checkout
       - name: Checkout
         uses: actions/checkout@v2
+      # See: https://github.com/actions/setup-python
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
+      # See: https://github.com/dschep/install-poetry-action
       - name: Install Poetry
         uses: dschep/install-poetry-action@v1.3
       - name: Install Dependencies
