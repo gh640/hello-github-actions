@@ -11,7 +11,8 @@ ENV PYTHONNUMBUFFERED=1 \
 WORKDIR /app
 
 # Install `poetry` and disable creation of virtualenv.
-RUN wget -O - https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python && \
+RUN apk add build-base && \
+    wget -O - https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python && \
     poetry config virtualenvs.create false
 
 # COPY pyproject.toml poetry.lock and run `poetry install`.
