@@ -4,13 +4,17 @@ on:
   push:
   pull_request:
 
+env:
+  POETRY_VERSION: 1.1.7
+  POETRY_URL: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
+
 jobs:
   pytest:
     name: Run tests with pytest
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.8, 3.9]
     steps:
       # See: https://github.com/actions/checkout
       - name: Checkout
@@ -23,8 +27,8 @@ jobs:
       # Poetry そのものをインストールする
       - name: Install Poetry
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-          echo "::add-path::$HOME/.poetry/bin"
+          curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Install Dependencies
         run: poetry install --no-interaction
       - name: Run Tests
@@ -38,12 +42,12 @@ jobs:
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3.9
       # Poetry そのものをインストールする
       - name: Install Poetry
         run: |
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-          echo "::add-path::$HOME/.poetry/bin"
+          curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Install Dependencies
         run: poetry install --no-interaction
       - name: Check code style with Black
