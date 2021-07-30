@@ -19,9 +19,15 @@ jobs:
       # See: https://github.com/actions/checkout
       - name: Checkout
         uses: actions/checkout@v2
+      # See: https://github.com/actions/cache
+      - name: Cache Packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.local
+          key: poetry-${{ runner.os }}-${{ matrix.python-version }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
       # See: https://github.com/actions/setup-python
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       # Poetry そのものをインストールする
@@ -29,26 +35,38 @@ jobs:
         run: |
           curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+      # パッケージをインストールする
       - name: Install Dependencies
         run: poetry install --no-interaction
+      # テストを実行する
       - name: Run Tests
         run: poetry run pytest tests/
   black:
     name: Check code style with Black
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: 3.9
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v1
+      # See: https://github.com/actions/cache
+      - name: Cache Packages
+        uses: actions/cache@v2
         with:
-          python-version: 3.9
+          path: ~/.local
+          key: poetry-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
       # Poetry そのものをインストールする
       - name: Install Poetry
         run: |
           curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+      # パッケージをインストールする
       - name: Install Dependencies
         run: poetry install --no-interaction
+      # Black でのチェックを実行する
       - name: Check code style with Black
         run: poetry run black --check --diff .
