@@ -53,16 +53,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      # See: https://github.com/actions/setup-python
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+        # 実際にインストールされた正確なバージョン（ x.y.x ）をキャッシュのキーで利用する
+        id: setup_python
       # See: https://github.com/actions/cache
       - name: Cache Packages
         uses: actions/cache@v2
         with:
           path: ~/.local
-          key: poetry-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          key: poetry-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
       # Poetry そのものをインストールする
       - name: Install Poetry
         run: |
