@@ -7,8 +7,8 @@ on:
   pull_request:
 
 env:
-  POETRY_VERSION: 1.1.7
-  POETRY_URL: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
+  POETRY_VERSION: "1.8.1"
+  POETRY_URL: https://install.python-poetry.org
 
 jobs:
   pytest:
@@ -16,28 +16,29 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: ["3.12", "3.11"]
     steps:
       # See: https://github.com/actions/checkout
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       # See: https://github.com/actions/setup-python
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
         # 実際にインストールされた正確なバージョン（ x.y.x ）をキャッシュのキーで利用する
         id: setup_python
       # See: https://github.com/actions/cache
       - name: Cache Packages
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.local
           key: poetry-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
       # Poetry そのものをインストールする
       - name: Install Poetry
         run: |
-          curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
+          curl -sSL ${{ env.POETRY_URL }} | \
+            python - --version ${{ env.POETRY_VERSION }}
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       # パッケージをインストールする
       - name: Install Dependencies
@@ -49,27 +50,28 @@ jobs:
     name: Check code style with Black
     runs-on: ubuntu-latest
     env:
-      PYTHON_VERSION: 3.9
+      PYTHON_VERSION: "3.12"
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       # See: https://github.com/actions/setup-python
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
         # 実際にインストールされた正確なバージョン（ x.y.x ）をキャッシュのキーで利用する
         id: setup_python
       # See: https://github.com/actions/cache
       - name: Cache Packages
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.local
           key: poetry-${{ runner.os }}-${{ steps.setup_python.outputs.python-version }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
       # Poetry そのものをインストールする
       - name: Install Poetry
         run: |
-          curl -sSL ${{ env.POETRY_URL }} | python - --version ${{ env.POETRY_VERSION }}
+          curl -sSL ${{ env.POETRY_URL }} | \
+            python - --version ${{ env.POETRY_VERSION }}
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       # パッケージをインストールする
       - name: Install Dependencies
