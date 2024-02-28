@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12", "3.11"]
+        python-version: ["3.12"]
     steps:
       # See: https://github.com/actions/checkout
       - name: Checkout
